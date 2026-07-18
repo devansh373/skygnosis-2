@@ -1,69 +1,73 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
+import Link from "next/link";
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
+  const searchParams = useSearchParams();
+  const ticketId = searchParams.get("ticketId");
   const router = useRouter();
-  const [result, setResult] = useState<{priority: string; category: string; suggested_reply: string | null} | null>(null);
-
-  useEffect(() => {
-    const data = sessionStorage.getItem('triageResult');
-    if (data) {
-      // eslint-disable-next-line
-      setResult(JSON.parse(data));
-      // Optionally clear it so it doesn't persist forever
-      // sessionStorage.removeItem('triageResult');
-    } else {
-      router.push('/');
-    }
-  }, [router]);
-
-  if (!result) return null;
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="max-w-xl w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8 text-center">
-        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
+    <div className="w-full max-w-md animate-in">
+      <div className="glass-panel p-8 rounded-3xl relative z-10 text-center">
+        <div className="flex justify-center mb-6 animate-success">
+          <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center border-2 border-emerald-500/50">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
         </div>
-        
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Ticket Submitted!</h1>
-        <p className="text-gray-500 mb-8">Our AI has triaged your request and it has been sent to our team.</p>
 
-        <div className="bg-gray-50 rounded-xl p-6 text-left space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 border-b pb-2">AI Triage Results</h2>
+        <h1 className="text-2xl font-bold mb-2">Request Received</h1>
+        <p className="text-slate-400 text-sm mb-8">
+          Thank you for reaching out! Our AI triage system has successfully processed your request.
+        </p>
+
+        <div className="bg-[#0f172a]/80 border border-slate-700/50 rounded-2xl p-6 mb-8 relative overflow-hidden">
+          {/* Subtle top barcode accent */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,#334155_2px,#334155_4px)] opacity-30"></div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-500">Priority</p>
-              <p className="font-medium text-gray-900">{result.priority}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Category</p>
-              <p className="font-medium text-gray-900">{result.category}</p>
-            </div>
+          <div className="flex justify-between items-center border-b border-slate-700/50 pb-4 mb-4">
+            <span className="text-slate-400 text-sm">Ticket ID</span>
+            <span className="font-mono text-lg font-bold text-emerald-400">#{ticketId || "---"}</span>
           </div>
           
-          {result.suggested_reply && (
-            <div className="pt-2">
-              <p className="text-sm text-gray-500 mb-1">Suggested Auto-Reply</p>
-              <div className="bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-700 italic">
-                &quot;{result.suggested_reply}&quot;
-              </div>
-            </div>
-          )}
+          <div className="flex flex-col items-center">
+            <span className="text-slate-400 text-sm mb-1">Estimated Response Time</span>
+            <span className="text-white font-medium">Under 2 hours</span>
+          </div>
         </div>
 
         <button
-          onClick={() => router.push('/')}
-          className="mt-8 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-lg transition"
+          onClick={() => router.push("/")}
+          className="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium p-4 rounded-xl transition-all duration-300 border border-slate-700 hover:border-slate-600"
         >
-          Submit Another Ticket
+          Submit Another Request
         </button>
+
+        <div className="mt-6 text-xs text-slate-500">
+          Need to speak with an agent urgently? <Link href="/admin/login" className="text-purple-400 hover:text-purple-300 underline">Admin Login</Link>
+        </div>
       </div>
+    </div>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <main className="flex min-h-screen items-center justify-center p-6 relative overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-emerald-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
+      
+      <Suspense fallback={
+        <div className="w-full max-w-md animate-in glass-panel p-8 rounded-3xl flex justify-center py-20">
+          <div className="w-8 h-8 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+        </div>
+      }>
+        <ConfirmationContent />
+      </Suspense>
     </main>
   );
 }

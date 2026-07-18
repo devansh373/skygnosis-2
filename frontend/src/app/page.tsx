@@ -1,96 +1,113 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Home() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await axios.post('http://localhost:3001/api/tickets', formData);
-      const ticket = response.data;
-      
-      // Store result in sessionStorage for the confirmation page
-      sessionStorage.setItem('triageResult', JSON.stringify({
-        priority: ticket.priority,
-        category: ticket.category,
-        suggested_reply: ticket.suggested_reply,
-      }));
-      
-      router.push('/confirmation');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to submit ticket');
+      const response = await axios.post("http://localhost:3001/api/tickets", formData);
+      router.push(`/confirmation?ticketId=${response.data.id}`);
+    } catch (err) {
+      setError("Failed to submit ticket. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Skygnosis Support</h1>
-        <p className="text-gray-500 mb-8">How can we help you today?</p>
+    <main className="flex min-h-screen items-center justify-center p-6 relative overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
 
-        {error && (
-          <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6 text-sm">
-            {error}
+      <div className="w-full max-w-lg animate-in">
+        <div className="glass-panel p-10 rounded-3xl relative z-10 text-center">
+          <div className="inline-block p-3 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/10 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
           </div>
-        )}
+          
+          <h1 className="text-3xl font-bold tracking-tight mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            How can we help?
+          </h1>
+          <p className="text-slate-400 mb-8 text-sm">
+            Our AI-powered triage system will direct your request immediately.
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input
-              type="text"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-            <textarea
-              required
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6 text-left">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm text-center">
+                {error}
+              </div>
+            )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition disabled:opacity-70 flex items-center justify-center"
-          >
-            {loading ? (
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : null}
-            {loading ? 'Processing...' : 'Submit Ticket'}
-          </button>
-        </form>
+            <div className="floating-label-group">
+              <input
+                type="text"
+                id="name"
+                required
+                className="glass-input w-full p-4 rounded-xl text-base"
+                placeholder=" "
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+              <label htmlFor="name" className="floating-label">Full Name</label>
+            </div>
+
+            <div className="floating-label-group">
+              <input
+                type="email"
+                id="email"
+                required
+                className="glass-input w-full p-4 rounded-xl text-base"
+                placeholder=" "
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+              <label htmlFor="email" className="floating-label">Email Address</label>
+            </div>
+
+            <div className="floating-label-group">
+              <textarea
+                id="message"
+                required
+                rows={4}
+                className="glass-input w-full p-4 rounded-xl text-base resize-none"
+                placeholder=" "
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              />
+              <label htmlFor="message" className="floating-label">Describe your issue in detail...</label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium p-4 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(168,85,247,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                "Submit Request"
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </main>
   );

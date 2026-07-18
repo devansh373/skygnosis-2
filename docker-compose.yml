@@ -25,13 +25,10 @@ services:
     container_name: skygnosis-backend
     ports:
       - "3001:3001"
+    env_file:
+      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/skygnosis?schema=public
-      - PORT=3001
-      - JWT_SECRET=super-secret-key-change-me
-      - ADMIN_USERNAME=admin
-      - ADMIN_PASSWORD=password123
-      - GEMINI_API_KEY=${GEMINI_API_KEY} # Needs to be passed from the host environment
     depends_on:
       db:
         condition: service_healthy

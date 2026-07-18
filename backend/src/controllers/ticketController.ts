@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import prisma from '../config/db.js';
-import { triageTicketMessage } from '../services/gemini.js';
+import { triageTicketMessage } from '../services/ai.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 // Schemas
