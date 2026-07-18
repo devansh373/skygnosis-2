@@ -28,7 +28,6 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   const fetchTickets = useCallback(async () => {
-    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -46,7 +45,7 @@ export default function AdminDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTickets(response.data.items);
-    } catch (err) {
+    } catch {
       localStorage.removeItem("token");
       router.push("/admin/login");
     } finally {
@@ -67,7 +66,7 @@ export default function AdminDashboard() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchTickets();
-    } catch (err) {
+    } catch {
       alert("Failed to update status");
     }
   };
@@ -140,7 +139,7 @@ export default function AdminDashboard() {
             {/* Filters */}
             <div className="flex gap-3">
               <select 
-                className="bg-[#0f172a] border border-slate-700 text-slate-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 outline-none cursor-pointer"
+                className="bg-[#0f172a] ring-1 ring-slate-700 text-slate-300 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 block p-2 outline-none cursor-pointer border-none"
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value)}
               >
@@ -151,7 +150,7 @@ export default function AdminDashboard() {
               </select>
 
               <select 
-                className="bg-[#0f172a] border border-slate-700 text-slate-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 outline-none cursor-pointer"
+                className="bg-[#0f172a] ring-1 ring-slate-700 text-slate-300 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 block p-2 outline-none cursor-pointer border-none"
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
               >
@@ -165,7 +164,7 @@ export default function AdminDashboard() {
 
             <div className="h-6 w-px bg-slate-700 hidden sm:block"></div>
 
-            <div className="flex items-center gap-4 hidden sm:flex">
+            <div className="hidden sm:flex items-center gap-4">
               <span className="flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
@@ -239,7 +238,7 @@ export default function AdminDashboard() {
                               {ticket.status}
                             </span>
                             <select
-                              className="bg-[#0f172a] border border-slate-700 text-slate-300 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2 hover:bg-slate-800 transition-colors cursor-pointer outline-none"
+                              className="bg-[#0f172a] ring-1 ring-slate-700 text-slate-300 text-xs rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full p-2 hover:bg-slate-800 transition-colors cursor-pointer outline-none border-none"
                               value={ticket.status}
                               onChange={(e) => updateStatus(ticket.id, e.target.value)}
                             >

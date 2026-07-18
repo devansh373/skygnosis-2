@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
 
 export default function AdminLogin() {
@@ -25,7 +26,7 @@ export default function AdminLogin() {
       // Store token
       localStorage.setItem("token", response.data.token);
       router.push("/admin/dashboard");
-    } catch (err) {
+    } catch {
       setError("Invalid credentials. Access denied.");
     } finally {
       setLoading(false);
@@ -40,7 +41,7 @@ export default function AdminLogin() {
 
       <div className="w-full max-w-sm animate-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 mb-6 shadow-lg shadow-indigo-500/30">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-tr from-blue-600 to-indigo-600 mb-6 shadow-lg shadow-indigo-500/30">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -86,7 +87,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium p-3.5 rounded-xl transition-all duration-300 shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium p-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-indigo-500/40 hover:shadow-xl hover:shadow-indigo-500/50 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
@@ -101,9 +102,9 @@ export default function AdminLogin() {
         </div>
         
         <div className="mt-8 text-center">
-          <a href="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+          <Link href="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
             &larr; Back to Public Portal
-          </a>
+          </Link>
         </div>
       </div>
     </main>
