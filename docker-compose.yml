@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: skygnosis-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: skygnosis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d skygnosis"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skygnosis-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/skygnosis?schema=public
+      - PORT=3001
+      - JWT_SECRET=super-secret-key-change-me
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=password123
+      - GEMINI_API_KEY=${GEMINI_API_KEY} # Needs to be passed from the host environment
+    depends_on:
+      db:
+        condition: service_healthy
+    # Override command to run migrations before starting
+    command: sh -c "npx prisma db push && npm start"
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: skygnosis-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # If the frontend needed to call Next.js API routes with server-side fetching, it would use this.
+      # But since the client calls the backend directly, NEXT_PUBLIC_API_URL could be useful.
+      # Right now we hardcoded http://localhost:3001 in the frontend components, which works for client-side fetching from the host machine browser.
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
