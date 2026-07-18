@@ -54,7 +54,10 @@ export default function AdminDashboard() {
   }, [filterPriority, filterCategory, router]);
 
   useEffect(() => {
-    fetchTickets();
+    const initFetch = async () => {
+      await fetchTickets();
+    };
+    initFetch();
   }, [fetchTickets]);
 
   const updateStatus = async (id: number, status: string) => {
@@ -139,7 +142,7 @@ export default function AdminDashboard() {
             {/* Filters */}
             <div className="flex gap-3">
               <select 
-                className="bg-[#0f172a] ring-1 ring-slate-700 text-slate-300 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 block p-2 outline-none cursor-pointer border-none"
+                className="bg-[#0f172a] border dark:border-slate-700 text-slate-300 text-sm rounded-lg dark:focus:ring-indigo-500 dark:focus:border-indigo-500 block p-2 outline-none cursor-pointer"
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value)}
               >
@@ -150,7 +153,7 @@ export default function AdminDashboard() {
               </select>
 
               <select 
-                className="bg-[#0f172a] ring-1 ring-slate-700 text-slate-300 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 block p-2 outline-none cursor-pointer border-none"
+                className="bg-[#0f172a] border dark:border-slate-700 text-slate-300 text-sm rounded-lg dark:focus:ring-indigo-500 dark:focus:border-indigo-500 block p-2 outline-none cursor-pointer"
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
               >
@@ -238,7 +241,7 @@ export default function AdminDashboard() {
                               {ticket.status}
                             </span>
                             <select
-                              className="bg-[#0f172a] ring-1 ring-slate-700 text-slate-300 text-xs rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full p-2 hover:bg-slate-800 transition-colors cursor-pointer outline-none border-none"
+                              className="bg-[#0f172a] border dark:border-slate-700 text-slate-300 text-xs rounded-lg dark:focus:ring-indigo-500 dark:focus:border-indigo-500 block w-full p-2 hover:bg-slate-800 transition-colors cursor-pointer outline-none"
                               value={ticket.status}
                               onChange={(e) => updateStatus(ticket.id, e.target.value)}
                             >
